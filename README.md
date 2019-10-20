@@ -1,2 +1,3 @@
-# spotify-wrapper-api
-Spority wrapper API
+# Spority wrapper API
+
+Work in progress

@@ -1,0 +1,37 @@
+{
+  "name": "spotify-wrapper-api",
+  "version": "0.1.0",
+  "description": "Spotify Wrapper API",
+  "author": "Aivars Liepa",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aivarsliepa/spotify-wrapper-api"
+  },
+  "license": "MIT",
+  "scripts": {},
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "express": "^4.17.1",
+    "mongoose": "^5.7.5",
+    "passport": "^0.4.0",
+    "passport-spotify": "^1.1.0"
+  },
+  "devDependencies": {
+    "@types/body-parser": "^1.17.1",
+    "@types/eslint": "^6.1.2",
+    "@types/express": "^4.17.1",
+    "@types/mongoose": "^5.5.22",
+    "@types/passport": "^1.0.1",
+    "@types/spotify-api": "0.0.1",
+    "@typescript-eslint/eslint-plugin": "^2.4.0",
+    "@typescript-eslint/parser": "^2.4.0",
+    "dotenv": "^8.2.0",
+    "eslint": "^6.5.1",
+    "jest": "^24.9.0",
+    "nodemon": "^1.19.4",
+    "supertest": "^4.0.2",
+    "ts-jest": "^24.1.0",
+    "ts-node": "^8.4.1",
+    "typescript": "^3.6.4"
+  }
+}
