@@ -1,0 +1,15 @@
+# for development only
+version: "3"
+services:
+  mongo:
+    image: mongo
+    restart: always
+    ports:
+      - 27017:27017
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: dev
+    volumes:
+      - db-data:/data/db
+volumes:
+  db-data:
