@@ -1,22 +1,35 @@
 import { Schema, model, Document } from "mongoose";
 
-import { songSchema } from "./Song";
+export type Song = {
+  spotifyId: string;
+  href: string;
+  labels: string[];
+};
 
-export interface IUserDocument extends Document {
+export type UserData = {
   spotifyId: string;
   spotifyToken: string;
   spotifyRefreshToken: string;
   spotifyTokenExpires: Date;
-}
+  songs: Song[];
+};
+
+export type UserDocument = UserData & Document;
 
 const userSchema = new Schema({
   spotifyId: { required: true, type: String, unique: true },
   spotifyToken: { required: true, type: String },
   spotifyRefreshToken: { required: true, type: String },
   spotifyTokenExpires: { required: true, type: Date },
-  songs: [songSchema]
+  songs: [
+    {
+      spotifyId: String,
+      href: String,
+      labels: [String]
+    }
+  ]
 });
 
-const User = model<IUserDocument>("User", userSchema);
+const User = model<UserDocument>("User", userSchema);
 
 export default User;

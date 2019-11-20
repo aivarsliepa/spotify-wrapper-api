@@ -3,6 +3,7 @@ import { Strategy as SpotifyStrategy } from "passport-spotify";
 import passport from "passport";
 
 import User from "./models/User";
+import { plusSeconds } from "./utils/time";
 
 const jwtOpts: StrategyOptions = {
   jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
@@ -34,14 +35,13 @@ const spotifyCallback = async (
   profile: any,
   done: Function
 ) => {
-  const expiresDate = new Date();
-  expiresDate.setTime(expiresDate.getTime() + expires_in * 1000);
+  const spotifyTokenExpires = plusSeconds(new Date(), expires_in);
 
   const query = { spotifyId: profile.id };
   const data = {
     spotifyRefreshToken: refreshToken,
     spotifyToken: accessToken,
-    spotifyTokenExpires: expiresDate
+    spotifyTokenExpires
   };
 
   try {
@@ -66,5 +66,8 @@ const spotifyStrategy = new SpotifyStrategy(spotifyOpts, spotifyCallback);
 passport.use(jwtStrategy);
 passport.use(spotifyStrategy);
 
-export const spotifyAuth = passport.authenticate("spotify", { session: false });
+export const spotifyAuth = passport.authenticate("spotify", {
+  session: false,
+  scope: ["user-library-read", "playlist-read-private"]
+});
 export const jwtAuth = passport.authenticate("jwt", { session: false });

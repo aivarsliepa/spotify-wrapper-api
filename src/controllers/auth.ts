@@ -1,18 +1,18 @@
 import { RequestHandler } from "express";
 import jwt from "jsonwebtoken";
 
-import { IUserDocument } from "../models/User";
+import { UserDocument } from "../models/User";
+import { plusSeconds } from "../utils/time";
 
 export const getSpotifyCallback: RequestHandler = (req, res) => {
-  const user = req.user as IUserDocument;
+  const user = req.user as UserDocument;
 
   const payload = { spotifyId: user.spotifyId };
   const token = jwt.sign(payload, process.env.SECRET_OR_KEY);
 
-  const expiresDate = new Date();
-  expiresDate.setTime(expiresDate.getTime() + 2 * 60 * 1000);
+  const expires = plusSeconds(new Date(), 120);
 
-  res.cookie("x-jwt", token, { expires: expiresDate });
+  res.cookie("x-jwt", token, { expires });
 
   res.redirect(process.env.CLIENT_URI);
 };
