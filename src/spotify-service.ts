@@ -61,7 +61,6 @@ const fetchData = async <T>(url: string, token: string): Promise<T> => {
 };
 
 const mapSavedTrackToSong = ({ track }: SpotifyApi.SavedTrackObject): Song => ({
-  href: track.href,
   spotifyId: track.id,
   labels: []
 });
@@ -176,4 +175,15 @@ export const fetchAllUserTracks = async (token: string): Promise<Song[]> => {
   playlistTracks.forEach(song => (songs[song.spotifyId] = song));
 
   return Object.values(songs);
+};
+
+export const fetchSongInfo = async (token: string, songIds: string[]) => {
+  const params = new URLSearchParams();
+
+  params.append("ids", songIds.join(","));
+  params.append("market", "from_token");
+
+  const url = "https://api.spotify.com/v1/tracks?" + params.toString();
+
+  return await fetchData(url, token);
 };

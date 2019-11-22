@@ -2,8 +2,7 @@ import { Schema, model, Document } from "mongoose";
 
 export type Song = {
   spotifyId: string;
-  href: string;
-  labels: string[];
+  labels?: string[];
 };
 
 export type UserData = {
@@ -12,6 +11,7 @@ export type UserData = {
   spotifyRefreshToken: string;
   spotifyTokenExpires: Date;
   songs: Song[];
+  currentList: Song[];
 };
 
 export type UserDocument = UserData & Document;
@@ -24,7 +24,6 @@ const userSchema = new Schema({
   songs: [
     {
       spotifyId: String,
-      href: String,
       labels: [String]
     }
   ]

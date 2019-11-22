@@ -14,6 +14,7 @@ import "./passport-setup";
 import { getSpotifyCallback } from "./controllers/auth";
 import { getSync } from "./controllers/sync";
 import { spotifyAuth, jwtAuth } from "./passport-setup";
+import { getMutlipleSongsInfo, getSingleSongInfo } from "./controllers/tracks";
 
 const app = express();
 
@@ -25,11 +26,15 @@ app.use(compression());
 app.use(passport.initialize());
 
 // The request will be redirected to spotify for authentication, so this handler will not be called.
-app.get("/auth/spotify", spotifyAuth, () => {});
+app.get("/auth/spotify", spotifyAuth);
 
 // Successful authentication, redirect home.
 app.get("/auth/spotify/callback", spotifyAuth, getSpotifyCallback);
 
 app.get("/sync", jwtAuth, getSync);
+
+// TODO: to be changed
+app.get("/songInfo", jwtAuth, getMutlipleSongsInfo);
+app.get("/songInfo/:songId", jwtAuth, getSingleSongInfo);
 
 export default app;
