@@ -3,6 +3,9 @@
   "eslint.autoFixOnSave": true,
   "eslint.validate": ["javascript", { "language": "typescript", "autoFix": true }],
   "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll": true
+  },
   "search.exclude": {
     "**/node_modules": true,
     "**/bower_components": true,

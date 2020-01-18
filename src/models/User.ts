@@ -1,20 +1,25 @@
 import { Schema, model, Document } from "mongoose";
 
-export type Song = {
+export interface SongData {
   spotifyId: string;
-  labels?: string[];
-};
+  labels: string[];
+}
 
-export type UserData = {
+export type SongDocument = SongData & Document;
+
+export interface UserData {
   spotifyId: string;
   spotifyToken: string;
   spotifyRefreshToken: string;
   spotifyTokenExpires: Date;
-  songs: Song[];
-  currentList: Song[];
-};
+  songs: SongData[];
+  currentList: SongData[];
+}
 
-export type UserDocument = UserData & Document;
+export type UserDocument = Omit<UserData, "songs"> &
+  Document & {
+    songs: SongDocument[];
+  };
 
 const userSchema = new Schema({
   spotifyId: { required: true, type: String, unique: true },

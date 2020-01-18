@@ -1,9 +1,14 @@
 import { URLSearchParams } from "url";
 import fetch from "node-fetch";
 
-import { UserDocument, Song } from "./models/User";
+import { UserDocument, SongData } from "./models/User";
 import { plusSeconds } from "./utils/time";
 import { wait } from "./utils";
+
+/*
+  Spotify track uri is made by `spotify:track:${id}`
+
+*/
 
 const refreshToken = async (user: UserDocument) => {
   const refresh_token = user.spotifyRefreshToken;
@@ -60,15 +65,15 @@ const fetchData = async <T>(url: string, token: string): Promise<T> => {
   return await res.json();
 };
 
-const mapSavedTrackToSong = ({ track }: SpotifyApi.SavedTrackObject): Song => ({
+const mapSavedTrackToSong = ({ track }: SpotifyApi.SavedTrackObject): SongData => ({
   spotifyId: track.id,
   labels: []
 });
 
 // UsersSavedTracksResponse
 // https://developer.spotify.com/web-api/get-users-saved-tracks/
-export const fetchUserSavedTracks = async (token: string): Promise<Song[]> => {
-  const allSongs: { [x: string]: Song } = {};
+export const fetchUserSavedTracks = async (token: string): Promise<SongData[]> => {
+  const allSongs: { [x: string]: SongData } = {};
 
   const params = new URLSearchParams();
   params.append("limit", "50");
@@ -95,8 +100,8 @@ export const fetchUserSavedTracks = async (token: string): Promise<Song[]> => {
   return Object.values(allSongs);
 };
 
-export const fetchSongsFromAllPlaylists = async (token: string): Promise<Song[]> => {
-  const allSongs: Song[] = [];
+export const fetchSongsFromAllPlaylists = async (token: string): Promise<SongData[]> => {
+  const allSongs: SongData[] = [];
 
   const params = new URLSearchParams();
   params.append("limit", "50");
@@ -134,8 +139,8 @@ export const fetchSongsFromAllPlaylists = async (token: string): Promise<Song[]>
   return allSongs;
 };
 
-export const fetchSongsForPlaylist = async (token: string, href: string): Promise<Song[]> => {
-  const playlistSongs: Song[] = [];
+export const fetchSongsForPlaylist = async (token: string, href: string): Promise<SongData[]> => {
+  const playlistSongs: SongData[] = [];
 
   const params = new URLSearchParams();
   params.append("limit", "50");
@@ -153,11 +158,11 @@ export const fetchSongsForPlaylist = async (token: string, href: string): Promis
 
   const requests = urls.map(async url => {
     const body = await fetchData<SpotifyApi.PlaylistTrackResponse>(url, token);
-    const songs: Song[] = body.items.map(mapSavedTrackToSong);
+    const songs: SongData[] = body.items.map(mapSavedTrackToSong);
     playlistSongs.push(...songs);
   });
 
-  const songs: Song[] = body.items.map(mapSavedTrackToSong);
+  const songs: SongData[] = body.items.map(mapSavedTrackToSong);
   playlistSongs.push(...songs);
 
   await Promise.all(requests);
@@ -165,8 +170,8 @@ export const fetchSongsForPlaylist = async (token: string, href: string): Promis
   return playlistSongs;
 };
 
-export const fetchAllUserTracks = async (token: string): Promise<Song[]> => {
-  const songs: { [x: string]: Song } = {};
+export const fetchAllUserTracks = async (token: string): Promise<SongData[]> => {
+  const songs: { [x: string]: SongData } = {};
 
   const saved = await fetchUserSavedTracks(token);
   const playlistTracks = await fetchSongsFromAllPlaylists(token);
@@ -177,13 +182,42 @@ export const fetchAllUserTracks = async (token: string): Promise<Song[]> => {
   return Object.values(songs);
 };
 
-export const fetchSongInfo = async (token: string, songIds: string[]) => {
+export const fetchSongInfo = async (token: string, ids: string) => {
   const params = new URLSearchParams();
 
-  params.append("ids", songIds.join(","));
+  params.append("ids", ids);
   params.append("market", "from_token");
 
   const url = "https://api.spotify.com/v1/tracks?" + params.toString();
 
-  return await fetchData(url, token);
+  return await fetchData<SpotifyApi.MultipleTracksResponse>(url, token);
+};
+
+export const playSong = async (token: string, songUri: string) => {
+  const res = await fetch("https://api.spotify.com/v1/me/player/play", {
+    headers: {
+      Authorization: `Bearer ${token}`
+    },
+    method: "PUT",
+    body: JSON.stringify({ uris: [songUri] })
+  });
+
+  console.log(res.status);
+  console.log(res.statusText);
+  // console.log(await res.json());
+};
+
+export const playSongs = async (token: string, uris: string[]) => {
+  const res = await fetch("https://api.spotify.com/v1/me/player/play", {
+    headers: {
+      Authorization: `Bearer ${token}`
+    },
+    method: "PUT",
+    body: JSON.stringify({ uris })
+  });
+
+  // TODO: try if RETRY AFTER
+  console.log(res.status);
+  console.log(res.statusText);
+  // console.log(await res.json());
 };

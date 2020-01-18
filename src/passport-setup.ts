@@ -68,6 +68,6 @@ passport.use(spotifyStrategy);
 
 export const spotifyAuth = passport.authenticate("spotify", {
   session: false,
-  scope: ["user-library-read", "playlist-read-private"]
+  scope: ["user-library-read", "playlist-read-private", "user-modify-playback-state"]
 });
 export const jwtAuth = passport.authenticate("jwt", { session: false });
